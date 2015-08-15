@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "AddEvent";
+}
+<script src="~/Scripts/jquery.min.js"></script>
+
+@using (Html.BeginForm("AddEvent", "Home", FormMethod.Post, new { @id = "frmAddEvent", @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <h4>Create new event :</h4>
+    <hr />
+    @Html.ValidationSummary("", new { @id = "validSummary" })
+    <div class="form-group">
+
+        <label class="col-md-2 control-label">Event Title</label>
+        <div class="col-md-10">
+            <input id="eventTitle" type="text" class="form-control" />
+            <span id="evtTitleError"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Description</label>
+        <div class="col-md-10">
+            <input id="eventDesc" type="text" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Start Date</label>
+        <div class="col-md-10">
+            <input id="eventStartDate" type="text" class="form-control" />
+            <span id="evtStartDateError"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">End Date</label>
+        <div class="col-md-10">
+            <input id="eventEndDate" type="text" class="form-control" />
+            <span id="evtEndDateError"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Location</label>
+        <div class="col-md-10">
+            <input id="eventLoc" type="text" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Url</label>
+        <div class="col-md-10">
+            <input id="eventURL" type="text" class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Event group</label>
+        <div class="col-md-10">
+            @Html.DropDownList("groupList", ViewData["groupList"] as List<SelectListItem>)
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">Event type</label>
+        <div class="col-md-10">
+
+            <select id="EventType" class="form-control">
+                <option>Event type 1</option>
+                <option>Event type 2</option>
+                <option>Event type 3</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Submit" />
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $("#frmAddEvent").on('submit', function (e) {
+        //ajax call here
+        var isValid = true;
+        var eventTitle = document.getElementById("eventTitle");
+        var eventstartDate = document.getElementById("eventstartDate");
+        var eventEndDate = document.getElementById("eventEndDate");
+        if (eventTitle == null || eventTitle.value == '') {
+            document.getElementById("evtTitleError").innerHTML = "Pleasee metion event title.";
+            isValid = false;
+        }
+        if (eventstartDate == null || eventstartDate.value == '') {
+            document.getElementById("evtStartDateError").innerHTML = "Please select event start date.";
+            isValid = false;
+        }
+        if (eventEndDate == null || eventEndDate.value == '') {
+            document.getElementById("evtEndDateError").innerHTML = "Please select end date.";
+            isValid = false;
+        }
+        if (parseDate(eventstartDate.value) > parseDate(eventEndDate.value)) {
+            alert("Start date cannot be greater than end date.");
+            isValid = false;
+        }
+        //stop form submission
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/common.js")
+
+}

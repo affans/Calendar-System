@@ -1,0 +1,9 @@
+﻿
+@{
+    ViewBag.Title = "GetQRCodeView";
+}
+
+<img src="@Url.Action("/BarcodeImage", new { barcodeText = ViewData["eventUrl"] })" />
+
+
+

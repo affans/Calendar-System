@@ -1,0 +1,87 @@
+IF OBJECT_ID(N'dbo.CalendarEvent', N'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.CalendarEvent
+	(
+	Id INT IDENTITY(1,1),
+	EventTitle NVARCHAR(MAX) NOT NULL,
+	Abstract NVARCHAR(MAX) NOT NULL,
+	EventDescription NVARCHAR(MAX) NOT NULL,
+	StartDate DATETIME NOT NULL,
+	EndDate DATETIME NOT NULL,
+	Location NVARCHAR (MAX) NOT NULL,
+	Url NVARCHAR (MAX) NULL,
+	Price Decimal(10,2) NULL,
+	EventGroupTitle NVARCHAR(MAX) NOT NULL,
+	EventGroupName NVARCHAR(MAX) NOT NULL,
+	EventTypeOne NVARCHAR(MAX) NOT NULL,
+	CreatedDateTime DATETIME NOT NULL,
+	LastUpdateDateTime DATETIME NOT NULL,
+	IsDeleted Bit NOT NULL,
+	CONSTRAINT [PK_CalendarEvent] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+END
+
+IF OBJECT_ID(N'dbo.EventGroupTitle', N'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.EventGroupTitle
+	(
+	Id INT IDENTITY(1,1),
+	Title NVARCHAR(MAX),
+	CreatedDateTime DATETIME NOT NULL,
+	LastUpdateDateTime DATETIME NOT NULL,
+	IsDeleted BIT NOT NULL
+	CONSTRAINT [PK_EventGroupTitle] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+END
+
+IF OBJECT_ID(N'dbo.EventGroupName', N'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.EventGroupName
+	(
+	Id INT IDENTITY(1,1),
+	GroupName NVARCHAR(MAX),
+	CreatedDateTime DATETIME NOT NULL,
+	LastUpdateDateTime DATETIME NOT NULL,
+	IsDeleted BIT NOT NULL
+	CONSTRAINT [PK_EventGroupName] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+END
+
+IF OBJECT_ID(N'dbo.EventTypeOne', N'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.EventTypeOne
+	(
+	Id INT IDENTITY(1,1),
+	EventTypeName NVARCHAR(MAX),
+	CreatedDateTime DATETIME NOT NULL,
+	LastUpdateDateTime DATETIME NOT NULL,
+	IsDeleted Bit NOT NULL
+	CONSTRAINT [PK_EventTypeOne] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+END
+
+IF OBJECT_ID(N'dbo.EventFilter', N'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.EventFilter
+	(
+	Id INT IDENTITY(1,1),
+	FilterGuid NVARCHAR(MAX),
+	EventFilterInXml NVARCHAR(MAX),
+	CreatedDateTime DATETIME NOT NULL,
+	LastUpdateDateTime DATETIME NOT NULL,
+	IsDeleted BIT NOT NULL
+	CONSTRAINT [PK_EventFilter] PRIMARY KEY CLUSTERED 
+	(
+		[Id] ASC
+	))
+END
+
+GO

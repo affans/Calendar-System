@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "AdminPanel";
+}
+
+
+<title>jQuery Show Modal Popup from code behind or server side</title>
+<link type="text/css" rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-example.css" type="text/css">
+<link rel="stylesheet" href="~/Content/prettify.css" type="text/css">
+
+<script type="text/javascript" src="~/Scripts/prettify.js"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-multiselect.css" type="text/css">
+<script type="text/javascript" src="~/Scripts/bootstrap-multiselect.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-multiselect-collapsible-groups.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#Dialog-Box").dialog({ autoOpen: false, modal: true, show: "blind", hide: "blind" });
+    });
+    function OpenDialog(id, purpose, value) {
+        if (purpose == 1 || purpose == 2 || purpose == 3 || purpose == 7 || purpose == 8 || purpose == 9) {
+            $('#DialogValue').val(value);
+            $('#Dialogid').val(id);
+            $('#DialogPurpose').val(purpose);
+            $('#Dialog-Box').dialog('open');
+        }
+        else if (purpose == 4 || purpose == 5 || purpose == 6) {
+            if (confirm("Do you want to delete ?")) {
+                onDelete(id, purpose);
+            }
+
+        }
+    }
+    function CloseDialog() {
+        $('#Dialog-Box').dialog('close');
+    }
+    function onsave() {
+
+        $.ajax({
+            url: '@Url.Action("SaveChanges", "Home")',
+            type: 'POST',
+            data: {
+                id: $('#Dialogid').val(),
+                value: $('#DialogValue').val(),
+                purpose: $('#DialogPurpose').val()
+            },
+            success: function (msg) {
+                if (msg == "true") {
+                    document.location.reload();
+                    CloseDialog();
+                }
+
+            },
+            error: function (msg) {
+                if (msg == "false")
+                { CloseDialog(); }
+
+            }
+        });
+
+    }
+
+    function onDelete(id, purpose) {
+
+        $.ajax({
+            url: '@Url.Action("SaveChanges", "Home")',
+            type: 'POST',
+            data: {
+                id: id,
+                value: "",
+                purpose: purpose
+            },
+            success: function (msg) {
+                if (msg == "true") {
+                    document.location.reload();
+                    CloseDialog();
+                }
+
+            },
+            error: function (msg) {
+                if (msg == "false")
+                { CloseDialog(); }
+
+            }
+        });
+
+    }
+</script>
+
+
+<div id="Dialog-Box">
+    <input type="text" id="DialogValue" />
+    <input type="hidden" id="Dialogid" />
+    <input type="hidden" id="DialogPurpose" />
+    <input type="submit" value="Submit" onclick="onsave()" />
+    <input type="button" value="Cancel" onclick="CloseDialog()" />
+</div>
+<br />
+<br />
+
+<h2>AdminPanel</h2>
+<h3>Group Name</h3>
+
+<div><input type="button" value="Add Group" onclick="OpenDialog(0,@((int)CalendarApp.Common.Purpose.AddGroupName),'')" class="btn btn-primary" /></div>
+<table>
+    <tr><td style="width:300px;"><h4><b>Group Name</b></h4></td><td><h4><b>Action</b></h4></td></tr>
+    @foreach (CalendarApp.Models.EventGroupName groupItem in (IList<CalendarApp.Models.EventGroupName>)ViewData["grouplist"])
+    {
+        if (!groupItem.IsDeleted)
+        {
+            <tr>
+                <td>@groupItem.GroupName</td>
+                <td><input type="button" value="Edit" onclick="OpenDialog(@groupItem.Id,@((int)CalendarApp.Common.Purpose.EditGroupName),'@groupItem.GroupName')" class="btn btn-primary" /> | <input type="button" value="Delete" onclick="OpenDialog(@groupItem.Id,@((int)CalendarApp.Common.Purpose.DeleteGroupName),'')" class="btn btn-primary" /> </td>
+            </tr>
+
+        }
+    }
+
+</table>
+<br />
+<br />
+
+<h3>Group Title</h3>
+<div><input type="button" value="Add Group Title" onclick="OpenDialog(0,@((int)CalendarApp.Common.Purpose.AddGroupTitle),'')" class="btn btn-primary" /></div>
+<table>
+    <tr><td style="width:300px;"><h4><b>Group Title</b></h4></td><td><h4><b>Action</b></h4></td></tr>
+    @foreach (CalendarApp.Models.EventGroupTitle groupTitle in (IList<CalendarApp.Models.EventGroupTitle>)ViewData["EventGroupTitle"])
+    {
+        if (!groupTitle.IsDeleted)
+        {
+            <tr>
+                <td>@groupTitle.Title</td>
+                <td><input type="button" value="Edit" onclick="OpenDialog(@groupTitle.Id,@((int)CalendarApp.Common.Purpose.EditGroupTitle),'@groupTitle.Title')" class="btn btn-primary" /> | <input type="button" value="Delete" onclick="OpenDialog(@groupTitle.Id,@((int)CalendarApp.Common.Purpose.DeleteGroupTitle),'')" class="btn btn-primary" /></td>
+            </tr>
+        }
+    }
+
+</table>
+
+<br />
+<br />
+<h3>Title Type</h3>
+<div><input type="button" value="Add Title Type" onclick="OpenDialog(0,@((int)CalendarApp.Common.Purpose.AddTitleType),'')" class="btn btn-primary" /></div>
+<table>
+    <tr><td style="width:300px;"><h4><b>EventTypeOne</b></h4></td><td><h4><b>Action</b></h4></td></tr>
+    @foreach (CalendarApp.Models.EventTypeOne typeItem in (IList<CalendarApp.Models.EventTypeOne>)ViewData["EventTypeOne"])
+    {
+        if (!typeItem.IsDeleted)
+        {
+            <tr><td>@typeItem.EventTypeName</td><td><input type="button" value="Edit" onclick="OpenDialog(@typeItem.Id,@((int)CalendarApp.Common.Purpose.EditType),'@typeItem.EventTypeName')" class="btn btn-primary" /> | <input type="button" value="Delete" onclick="OpenDialog(@typeItem.Id,@((int)CalendarApp.Common.Purpose.DeleteTYpe),'')" class="btn btn-primary" /> </td></tr>
+        }
+    }
+
+</table>
+
