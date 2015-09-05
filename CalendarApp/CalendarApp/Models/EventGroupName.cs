@@ -19,5 +19,6 @@ namespace CalendarApp.Models
         public System.DateTime CreatedDateTime { get; set; }
         public System.DateTime LastUpdateDateTime { get; set; }
         public bool IsDeleted { get; set; }
+        public string GroupTitle { get; set; }
     }
 }

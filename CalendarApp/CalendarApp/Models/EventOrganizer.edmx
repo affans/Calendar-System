@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="EventOrganizerModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="EventOrganizerModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="CalendarEvent">
           <Key>
             <PropertyRef Name="Id" />
@@ -45,6 +45,7 @@
           <Property Name="CreatedDateTime" Type="datetime" Nullable="false" />
           <Property Name="LastUpdateDateTime" Type="datetime" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="GroupTitle" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="EventGroupTitle">
           <Key>
@@ -67,11 +68,11 @@
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
         <Function Name="usp_AddEventFilter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="EventFilter" Type="varchar(max)" Mode="In" />
-          <Parameter Name="Guid" Type="varchar(max)" Mode="InOut" />
+          <Parameter Name="EventFilter" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="Guid" Type="nvarchar(max)" Mode="InOut" />
         </Function>
         <Function Name="usp_GetEventsByGuid" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="Guid" Type="varchar(max)" Mode="In" />
+          <Parameter Name="Guid" Type="nvarchar(max)" Mode="In" />
         </Function>
         <Function Name="Usp_UpdateCalendarEvents" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="newValue" Type="nvarchar(max)" Mode="In" />
@@ -99,11 +100,11 @@
           <EntitySet Name="EventTypeOnes" EntityType="EventOrganizerModel.EventTypeOne" />
           <EntitySet Name="CalendarEvents" EntityType="EventOrganizerModel.CalendarEvent" />
           <FunctionImport Name="usp_AddEventFilter">
-            <Parameter Name="EventFilter" Mode="In" Type="String" />
+          <Parameter Name="EventFilter" Mode="In" Type="String" />
             <Parameter Name="Guid" Mode="InOut" Type="String" />
           </FunctionImport>
           <FunctionImport Name="Usp_UpdateCalendarEvents">
-            <Parameter Name="newValue" Mode="In" Type="String" />
+          <Parameter Name="newValue" Mode="In" Type="String" />
             <Parameter Name="oldValue" Mode="In" Type="String" />
             <Parameter Name="purpose" Mode="In" Type="Int32" />
           </FunctionImport>
@@ -128,6 +129,7 @@
           <Property Name="CreatedDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="LastUpdateDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="GroupTitle" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="EventGroupTitle">
           <Key>
@@ -192,6 +194,7 @@
           <EntitySetMapping Name="EventGroupNames">
             <EntityTypeMapping TypeName="EventOrganizerModel.EventGroupName">
               <MappingFragment StoreEntitySet="EventGroupName">
+                <ScalarProperty Name="GroupTitle" ColumnName="GroupTitle" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="LastUpdateDateTime" ColumnName="LastUpdateDateTime" />
                 <ScalarProperty Name="CreatedDateTime" ColumnName="CreatedDateTime" />

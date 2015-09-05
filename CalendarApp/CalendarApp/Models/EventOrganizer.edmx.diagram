@@ -5,11 +5,11 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="3ed21844fdab4a70a4098563a1baa0c4" Name="Diagram1">
-        <EntityTypeShape EntityType="EventOrganizerModel.EventFilter" Width="1.5" PointX="2.5" PointY="0.75" />
-        <EntityTypeShape EntityType="EventOrganizerModel.EventGroupName" Width="1.5" PointX="6.625" PointY="0.875" />
-        <EntityTypeShape EntityType="EventOrganizerModel.EventGroupTitle" Width="1.5" PointX="4.875" PointY="0.75" />
-        <EntityTypeShape EntityType="EventOrganizerModel.EventTypeOne" Width="1.5" PointX="0.5" PointY="0.75" />
-        <EntityTypeShape EntityType="EventOrganizerModel.CalendarEvent" Width="1.5" PointX="0.5" PointY="2.875" />
+        <EntityTypeShape EntityType="EventOrganizerModel.EventFilter" Width="1.5" PointX="1.25" PointY="3.25" />
+        <EntityTypeShape EntityType="EventOrganizerModel.EventGroupName" Width="2.625" PointX="3.375" PointY="3" />
+        <EntityTypeShape EntityType="EventOrganizerModel.EventGroupTitle" Width="2.75" PointX="4.875" PointY="0.75" />
+        <EntityTypeShape EntityType="EventOrganizerModel.EventTypeOne" Width="2.875" PointX="0.5" PointY="0.75" />
+        <EntityTypeShape EntityType="EventOrganizerModel.CalendarEvent" Width="1.5" PointX="8.625" PointY="1.125" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
