@@ -3,190 +3,258 @@
 @{
     ViewBag.Title = "Create";
 }
-
-
-<script src="//cdn.jsdelivr.net/jquery.ui.timepicker.addon/1.4.5/jquery-ui-sliderAccess.js"></script>
-<link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.ui.timepicker.addon/1.4.5/jquery-ui-timepicker-addon.css">
-<script src="//cdn.jsdelivr.net/jquery.ui.timepicker.addon/1.4.5/jquery-ui-timepicker-addon.js"></script>
-
-@using (Html.BeginForm("Create", "Event", FormMethod.Post, new { id = "CreateEvent", @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-    <h4>Create new event :</h4>
-    <hr />
-    @Html.ValidationSummary()
-    <div class="form-group required">
-        <label class="col-md-2 control-label">Group</label>
-        <div class="col-md-10">
-            @Html.DropDownList("EventGroupTitle", ViewData["groupList"] as List<SelectListItem>, new { @class = "form-control" })
-        </div>
-    </div>
-    
-    <div class="form-group required">
-        <label class="col-md-2 control-label">Group name</label>
-        <div class="col-md-10">
-            @Html.DropDownList("EventGroupName", ViewData["groupNameList"] as List<SelectListItem>, new { @class = "form-control" })
-        </div>
-    </div>
-    
-    <div class="form-group required">
-        <label class="col-md-2 control-label">Event type</label>
-        <div class="col-md-10">
-            @Html.DropDownList("EventTypeOne", ViewData["typeList"] as List<SelectListItem>, new { @class = "form-control" })
-        </div>
-    </div>
-    
-    <div class="form-group required">
-        <label class="col-md-2 control-label">Event Title</label>
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.EventTitle, new { @class = "form-control", @required = "required" })
-            @Html.ValidationMessageFor(model => model.EventTitle)
-        </div>
-    </div>
-    <div class="form-group required">
-        <label class="col-md-2 control-label">Short Description</label>
-        <div class="col-md-10">
-            @Html.TextAreaFor(model => model.Abstract, new { @class = "form-control", @required = "required" })
-            @Html.ValidationMessageFor(model => model.Abstract)
-        </div>
-    </div>
-
-    <div class="form-group required">
-        <label class="col-md-2 control-label">Description</label>
-        <div class="col-md-10">
-            @Html.TextAreaFor(model => model.EventDescription, new { @class = "form-control", @required = "required" })
-            @Html.ValidationMessageFor(model => model.EventDescription)
-        </div>
-    </div>
-    <div class="form-group required">
-        <label class="col-md-2 control-label">Start Date</label>
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @required = "required" })
-            @Html.ValidationMessageFor(model => model.StartDate)
-        </div>
-    </div>
-    <div class="form-group required">
-        <label class="col-md-2 control-label">End Date</label>
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @required = "required" })
-            @Html.ValidationMessageFor(model => model.EndDate)
-        </div>
-    </div>
-    <div class="form-group required">
-        <label class="col-md-2 control-label">Location</label>
-        <div class="col-md-10">
-            @Html.TextBoxFor(model => model.Location, new { @class = "form-control", @required = "required" })
-            @Html.ValidationMessageFor(model => model.Location)
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label">Url</label>
-        <div class="col-md-10">
-           
-            <input id="Url" name="Url" type="url" class="form-control" placeholder="Not all calendar supports URL"   /> 
-            @Html.ValidationMessageFor(model => model.Url)
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="col-md-2 control-label">Price</label>
-        <div class="col-md-10">
-            
-            <input id="Price" name="Price" type="number" step="0.01" class="form-control">
-            @Html.ValidationMessageFor(model => model.Price)
-        </div>
-    </div>
-    
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" id="SubmitAjax" class="btn btn-primary" value="Submit" />
-        </div>
-    </div>
-}
-
 <script>
+                $(document).ready(function () {
+                    var startDateTextBox = $('#StartDate');
+                    var endDateTextBox = $('#EndDate');
+                    $("#EventGroupName").prop("disabled", true);
+                    $("#EventGroupName").empty();
+                    startDateTextBox.datetimepicker({
+                        dateFormat: 'yy/mm/dd',
+                        timeFormat: 'HH:mm',
+                        onClose: function (dateText, inst) {
+                            if (endDateTextBox.val() != '') {
+                                var testStartDate = startDateTextBox.datetimepicker('getDate');
+                                var testEndDate = endDateTextBox.datetimepicker('getDate');
+                                if (testStartDate > testEndDate)
+                                    endDateTextBox.datetimepicker('setDate', testStartDate);
+                            }
+                            else {
+                                endDateTextBox.val(dateText);
+                            }
+                        },
+                        onSelect: function (selectedDateTime) {
+                            endDateTextBox.datetimepicker('option', 'minDate', startDateTextBox.datetimepicker('getDate'));
+                        }
+                    });
+                    endDateTextBox.datetimepicker({
+                        dateFormat: 'yy/mm/dd',
+                        timeFormat: 'HH:mm',
+                        onClose: function (dateText, inst) {
+                            if (startDateTextBox.val() != '') {
+                                var testStartDate = startDateTextBox.datetimepicker('getDate');
+                                var testEndDate = endDateTextBox.datetimepicker('getDate');
+                                if (testStartDate > testEndDate)
+                                    startDateTextBox.datetimepicker('setDate', testEndDate);
+                            }
+                            else {
+                                startDateTextBox.val(dateText);
+                            }
+                        },
+                        onSelect: function (selectedDateTime) {
+                            startDateTextBox.datetimepicker('option', 'maxDate', endDateTextBox.datetimepicker('getDate'));
+                        }
+                    });
 
-    $(document).ready(function () {
+                    $("#CreateEvent").on("submit", function (e) {
+                        DisableSubmit("#SubmitAjax");
+                        e.preventDefault();
+                        $.ajax({
+                            url: this.action,
+                            type: this.method,
+                            data: $(this).serialize(),
+                            success: function (data) {
+                                ClearData();
+                                //var htmlString = $("#eventCreatedPanelBody").html();
+                                $("#eventCreatedPanelBody").text(data);
+                                $("#eventCreatedPanel").modal("show");
+                                //ShowToastMessage(data);
+                                EnableSubmit("#SubmitAjax");
+                            }
+                        });
+                    });
 
-        var startDateTextBox = $('#StartDate');
-        var endDateTextBox = $('#EndDate');
+                    $("#EventGroupTitle").change(function (e) {
+                        var mytext = $("#EventGroupTitle :selected").text();
+                        //alert(mytext)
+                        var groupnames = $('#EventGroupName');
+                        groupnames.empty();
+                        $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("GetDropDownMenuItems")',                            
+                            data: { 'id': mytext },
+                            dataType: 'json',
+                            success: function (msg) {
+                               groupnames.prop("disabled", false);
 
-        startDateTextBox.datetimepicker({
-            dateFormat:'yy/mm/dd',
-            timeFormat: 'HH:mm',
-            onClose: function (dateText, inst) {
-                if (endDateTextBox.val() != '') {
-                    var testStartDate = startDateTextBox.datetimepicker('getDate');
-                    var testEndDate = endDateTextBox.datetimepicker('getDate');
-                    if (testStartDate > testEndDate)
-                        endDateTextBox.datetimepicker('setDate', testStartDate);
+                                //alert('success')
+                                $(msg).each(function () {
+                                    //alert(this.Value)
+                                    //alert(this.Text)
+                                    groupnames.append($('<option></option>').val(this.Value).text(this.Text));
+                                });
+
+                            },
+                            failure: function (response) {
+                                alert(response.d);
+                            }
+                        });
+
+                    });
+                });
+
+                function DisableSubmit(id) {
+                    $(id).attr("disabled", "disabled");
                 }
-                else {
-                    endDateTextBox.val(dateText);
+
+                function EnableSubmit(id) {
+                    $(id).removeAttr("disabled");
                 }
-            },
-            onSelect: function (selectedDateTime) {
-                endDateTextBox.datetimepicker('option', 'minDate', startDateTextBox.datetimepicker('getDate'));
-            }
-        });
-        endDateTextBox.datetimepicker({
-            dateFormat: 'yy/mm/dd',
-            timeFormat: 'HH:mm',
-            onClose: function (dateText, inst) {
-                if (startDateTextBox.val() != '') {
-                    var testStartDate = startDateTextBox.datetimepicker('getDate');
-                    var testEndDate = endDateTextBox.datetimepicker('getDate');
-                    if (testStartDate > testEndDate)
-                        startDateTextBox.datetimepicker('setDate', testEndDate);
+
+                function ShowToastMessage(msg) {
+                    $('.toastMsg').text(msg).fadeIn(400).delay(5000).fadeOut(400);
                 }
-                else {
-                    startDateTextBox.val(dateText);
+
+                function ClearData() {
+                    $(":text").each(function () {
+                        $(this).val("");
+                    });
+
+                    $('#EventDescription').val("");
+                    $('#Abstract').val("");
+                    $('#Price').val("");
+                    $('#Url').val("");
                 }
-            },
-            onSelect: function (selectedDateTime) {
-                startDateTextBox.datetimepicker('option', 'maxDate', endDateTextBox.datetimepicker('getDate'));
-            }
-        });
-        
-        $("#CreateEvent").on("submit", function (e) {
-            DisableSubmit("#SubmitAjax");
-            e.preventDefault();
-            $.ajax({
-                url: this.action,
-                type: this.method,
-                data: $(this).serialize(),
-                success: function (data) {
-                    ClearData();
-                    ShowToastMessage(data);
-                    EnableSubmit("#SubmitAjax");
-                }
-            });
-        });
-    });
-
-    function DisableSubmit(id) {
-        $(id).attr("disabled", "disabled");
-    }
-
-    function EnableSubmit(id) {
-        $(id).removeAttr("disabled");
-    }
-
-    function ShowToastMessage(msg) {
-        $('.toastMsg').text(msg).fadeIn(400).delay(5000).fadeOut(400);
-    }
-
-    function ClearData() {
-        $(":text").each(function () {
-            $(this).val("");
-        });
-
-        $('#EventDescription').val("");
-        $('#Abstract').val("");
-        $('#Price').val("");
-        $('#Url').val("");
-    }
-
-  
-
-
 </script>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4>Add an event by filling out <strong>form below</strong></h4>
+            <hr />
+            @using (Html.BeginForm("Create", "Event", FormMethod.Post, new { id = "CreateEvent", @class = "form-vertical", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary()
+                <div class="row">
+                    <div class="col-md-4 field">
+                        <div class="form-group required">
+                            <label class="control-label">Group</label>
+                            <div>
+                                @Html.DropDownList("EventGroupTitle", ViewData["groupList"] as List<SelectListItem>, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 field">
+                        <div class="form-group required">
+                            <label class="control-label">Group name</label>
+                            <div >
+                                @Html.DropDownList("EventGroupName", ViewData["groupNameList"] as List<SelectListItem>, new { @class = "form-control" })                                 
+                                @Html.ValidationMessageFor(model => model.EventGroupName)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 field">
+                        <div class="form-group required">
+                            <label class="control-label">Event type</label>
+                            <div>
+                                @Html.DropDownList("EventTypeOne", ViewData["typeList"] as List<SelectListItem>, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 field">
+                        <div class="form-group required">
+                            <label class="control-label">Event Title</label>
+                            <div >
+                                @Html.TextBoxFor(model => model.EventTitle, new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.EventTitle)
+                            </div>
+                        </div>
+                    </div>     
+                    <div class="col-md-4 field">
+                        <div class="form-group required">
+                            <label class="control-label">Location</label>
+                            <div>
+                                @Html.TextBoxFor(model => model.Location, new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.Location)
+                            </div>
+                        </div>
+                    </div>       
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 field">
+                        <div class="form-group required">
+                            <label class="control-label">Start Date</label>
+                            <div>
+                                @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.StartDate)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 field">
+                        <div class="form-group required">
+                            <label class="control-label">End Date</label>
+                            <div>
+                                @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.EndDate)
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="row">
+                    <div class="col-lg-8 field">
+                        <div class="form-group required">
+                            <label class="control-label">Short Description</label>
+                            <div>
+                                @Html.TextAreaFor(model => model.Abstract, new { @class = "form-control", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.Abstract)
+                            </div>
+                        </div>
+                    </div>  
+                    <div class="col-lg-4 field margintop10">
+                       Example: whats a good example?
+                    </div>                      
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12 field">
+                        <div class="form-group required">
+                            <label class="control-label">Description</label>
+                            <div>
+                                @Html.TextAreaFor(model => model.EventDescription, new { @class = "form-control input-block-level", @required = "required" })
+                                @Html.ValidationMessageFor(model => model.EventDescription)
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+
+              
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="submit" id="SubmitAjax" class="btn btn-primary" value="Submit" />
+                    </div>
+                </div>
+            }
+           
+
+            <!-- Modal -->
+            <div id="eventCreatedPanel" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Success!</h4>
+                        </div>
+                        <div class="modal-body" id="eventCreatedPanelBody">
+                            @*<p>Your event has been created</p>*@
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

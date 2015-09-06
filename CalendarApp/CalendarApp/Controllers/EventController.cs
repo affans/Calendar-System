@@ -15,6 +15,7 @@ using System.IO;
 using Gma.QrCodeNet.Encoding.Windows.Render;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Data.Entity.Validation;
 
 namespace CalendarApp.Controllers
 {
@@ -103,9 +104,26 @@ namespace CalendarApp.Controllers
                         db.SaveChanges();
                         return Content("Event has been created successfully!");
                     }
+                    catch (DbEntityValidationException e)
+                    {
+                       
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+
+                            sb.Append(string.Format("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State));                           
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                sb.Append(string.Format("- Property: \"{0}\", Error: \"{1}\"", ve.PropertyName, ve.ErrorMessage));
+                            }
+                        }
+                        return Content(sb.ToString());
+                    }
                     catch (Exception ex)
                     {
-                        return Content("There is problem in saving the event.       Please try again.");
+                        //return Content(ex.Message.ToString());
+                        return Content("There is problem in saving the event. Please try again.");
                     }
                 }
             }
@@ -113,6 +131,26 @@ namespace CalendarApp.Controllers
             {
                 return View(calendarevent);
             }
+        }
+
+        [HttpPost]
+        public ActionResult GetDropDownMenuItems(string id)
+        {
+            var grouptitle = id;
+            List<SelectListItem> liEventGroupNames = new List<SelectListItem>();
+            using (EventOrganizerEntities db = new EventOrganizerEntities())
+            {    
+                var allgroupnames = db.EventGroupNames.Where(x => x.GroupTitle == grouptitle).OrderBy(x => x.GroupTitle).ToList();
+                if(allgroupnames.Count > 0)
+                {
+                    foreach (EventGroupName group in allgroupnames)
+                    {
+                        liEventGroupNames.Add(new SelectListItem { Text = group.GroupName, Value = group.GroupName });
+                    }
+                }
+                return Json(liEventGroupNames);
+            }
+            return Json("{1 : 1}");
         }
 
         // GET: /Event/Edit/5
@@ -184,6 +222,10 @@ namespace CalendarApp.Controllers
             return RedirectToAction("Index");
         }
 
+      
+
+
+
         public ActionResult EventFilter()
         {
             List<SelectListItem> liEventGroupTitles = new List<SelectListItem>();
@@ -225,16 +267,21 @@ namespace CalendarApp.Controllers
         {
             try
             {
+                // create a new guid
                 string guid = Guid.NewGuid().ToString();
+                //convert formcollection to XML table
                 string filterValue = CreateFilterXml(formCollection);
+
+                //Add the filter into the database
                 using (EventOrganizerEntities db = new EventOrganizerEntities())
                 {
                     ObjectParameter guidOutput = new ObjectParameter("Guid", typeof(string));
                     guidOutput.Value = guid;
                     db.usp_AddEventFilter(filterValue, guidOutput);
                     guid = Convert.ToString(guidOutput.Value);
-
                 }
+
+                // the return values is in the format: [string, success]. This lets us use AJAX to parse the string by doing a string split                
                 using (EventOrganizerEntities db = new EventOrganizerEntities())
                 {
                     List<CalendarEvent> calendarEvents = db.usp_GetEventsByGuid(guid).ToList();
@@ -382,8 +429,6 @@ namespace CalendarApp.Controllers
         public ActionResult GetQRCode(string text)
         {
             //BarcodeImage(text);
-
-
             ViewData["eventUrl"] = text;
             return View("GetQRCodeView");
         }

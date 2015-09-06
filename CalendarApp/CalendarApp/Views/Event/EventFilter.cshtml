@@ -3,23 +3,14 @@
 }
 
 
-@*<link rel="stylesheet" href="~/Content/bootstrap-3.3.2.min.css" type="text/css">*@
-<link rel="stylesheet" href="~/Content/bootstrap-example.css" type="text/css">
 <link rel="stylesheet" href="~/Content/prettify.css" type="text/css">
-
 <script type="text/javascript" src="~/Scripts/prettify.js"></script>
 <link rel="stylesheet" href="~/Content/bootstrap-multiselect.css" type="text/css">
 <script type="text/javascript" src="~/Scripts/bootstrap-multiselect.js"></script>
 <script type="text/javascript" src="~/Scripts/bootstrap-multiselect-collapsible-groups.js"></script>
 
-<script src="//cdn.jsdelivr.net/jquery.ui.timepicker.addon/1.4.5/jquery-ui-sliderAccess.js"></script>
-<link rel="stylesheet" href="//cdn.jsdelivr.net/jquery.ui.timepicker.addon/1.4.5/jquery-ui-timepicker-addon.css">
-<script src="//cdn.jsdelivr.net/jquery.ui.timepicker.addon/1.4.5/jquery-ui-timepicker-addon.js"></script>
-
-<script type="text/javascript">
-   
+<script type="text/javascript">   
     $(document).ready(function () {
-
 
         window.prettyPrint() && prettyPrint();
 
@@ -72,171 +63,208 @@
 
 
 
-@using (Html.BeginForm("EventFilter", "Event", FormMethod.Post, new { id = "EventFilter", @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-    <h4>Filter events to download :</h4>
-    <hr />
-    @Html.ValidationSummary()
-    <div class="row">
-        <div class="col-lg-6">
-            <div class="form-group required">
-                <label class="col-md-3 control-label" multiple="multiple">Group</label>
-                <div id="dvGroupTitle" class="col-md-4">
-                    @Html.DropDownList("EventGroupTitle", ViewData["groupList"] as List<SelectListItem>, new { @Id = "EventGroupTitle", @class = "form-control", multiple = "multiple", @onchange = "check(this,'#hfEventGroupTitle')", })
-                    <input type="hidden" id="hfEventGroupTitle" name="hfEventGroupTitle" />
-                </div>
-            </div>
-            <div class="form-group required">
-                <label class="col-md-3 control-label" multiple="multiple">Group Name</label>
-                <div class="col-md-4">
-                    @Html.DropDownList("EventGroupName", ViewData["groupNameList"] as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @onchange = "check(this,'#hfEventGroupName')" })
-                    <input type="hidden" id="hfEventGroupName" name="hfEventGroupName" />
-                </div>
-            </div>
-
-            <div class="form-group required">
-                <label class="col-md-3 control-label">Event type</label>
-                <div class="col-md-4">
-                    @Html.DropDownList("EventTypeOne", ViewData["typeList"] as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @onchange = "check(this,'#hfEventTypeOne')" })
-                    <input type="hidden" id="hfEventTypeOne" name="hfEventTypeOne" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-md-3 control-label">Start Date</label>
-                <div class="col-md-4">
-                    <input name="StartDate" id="StartDate" type="text" class="form-control" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="col-md-3 control-label">End Date</label>
-                <div class="col-md-4">
-                    <input name="EndDate" id="EndDate" type="text" class="form-control" />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-md-offset-3 col-md-10">
-                    <input id="SubmitAjax" type="submit" class="btn btn-primary" value="Apply" />
-                </div>
-            </div>
-
-        </div>
-        <div id="downloadPanel" style="display:none" class="jumbotron col-lg-6">
-            <h2>Please download your calendar.</h2>
-
-            <div class="row">
-                <div class="col-lg-12">
-                    <input id="downloadUrl" type="text" class="form-control" value="http://google.com" style="width:550px;" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">
-                    <a class="btn btn-primary" href="javascript:copyData()">Copy</a>
-                </div>
-                <div class="col-md-3">
-                    <a id="linDownload" target="_blank" class="btn btn-primary" href="#">Download</a>
-                </div>
-                <div class="col-md-3">
-                    <a id="qruri" href="GetQRCode?text=xxx" class="btn btn-primary" >QRCode</a>
-                </div>
-            </div>
-        </div>
-    </div>
-}
 
 <script>
-    $(document).ready(function () {
-        
-
-        $('#EventGroupTitle').multiselect({
-            includeSelectAllOption: true
-        });
-        $('#EventGroupName').multiselect({
-            includeSelectAllOption: true
-        });
-        $('#EventTypeOne').multiselect({
-            includeSelectAllOption: true
-        });
-
-        $("#EventFilter").on("submit", function (e) {
-            // alert($("#hfEventGroupTitle").val());
-            if ($("#hfEventGroupTitle").val() === null || $("#hfEventGroupTitle").val() === '') {
-                alert("Please select Group.");
-                return false;
-            }
-            if ($("#hfEventGroupName").val() === null || $("#hfEventGroupName").val() === '') {
-                alert("Please select Group name.");
-                return false;
-            }
-            if ($('#hfEventTypeOne').val() === null || $("#hfEventTypeOne").val() === '') {
-                alert("Please select Event type.");
-                return false;
-            }
-            DisableSubmit("#SubmitAjax");
-            e.preventDefault();
-            $.ajax({
-                url: this.action,
-                type: this.method,
-                data: $(this).serialize(),
-                caches: true,
-                success: function (data) {
-
-                    ClearData();
-                    ShowToastMessage(data.split(',')[0]);
-                    EnableSubmit("#SubmitAjax");
-                    //alert(data.split(',')[1]);
-                    if (data.split(',')[1] !== '0') {
-                        $("#downloadPanel").show();
-                        $("#downloadUrl").val(data.split(',')[2]);
-                        $("#linDownload").attr("href", data.split(',')[2]);
-                        var fakedUri = $("#qruri").attr("href");
-                        var uri = fakedUri.replace("xxx", $("#downloadUrl").val());
-                        $("#qruri").attr("href", uri);
-                        
-                    }
-                    else {
-                        $("#downloadPanel").hide();
-                    }
-                }
+        $(document).ready(function () {
+            $('#EventGroupTitle').multiselect({
+                includeSelectAllOption: true
             });
+            $('#EventGroupName').multiselect({
+                includeSelectAllOption: true
+            });
+            $('#EventTypeOne').multiselect({
+                includeSelectAllOption: true
+            });
+
+            $("#EventFilter").on("submit", function (e) {
+                // alert($("#hfEventGroupTitle").val());
+                if ($("#hfEventGroupTitle").val() === null || $("#hfEventGroupTitle").val() === '') {
+                    alert("Please select Group.");
+                    return false;
+                }
+                if ($("#hfEventGroupName").val() === null || $("#hfEventGroupName").val() === '') {
+                    alert("Please select Group name.");
+                    return false;
+                }
+                if ($('#hfEventTypeOne').val() === null || $("#hfEventTypeOne").val() === '') {
+                    alert("Please select Event type.");
+                    return false;
+                }
+                DisableSubmit("#SubmitAjax");
+                e.preventDefault();
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    caches: true,
+                    success: function (data) {
+                        //alert('alert issued')
+                        ClearData();
+                        EnableSubmit("#SubmitAjax");
+                        if (data.split(',')[1] !== '0') {
+                            $("#downloadPanel").modal("show");
+                            $("#downloadUrl").val(data.split(',')[2]);
+                            $("#linDownload").attr("href", data.split(',')[2]);
+                            var fakedUri = $("#qruri").attr("href");
+                            var uri = fakedUri.replace("xxx", $("#downloadUrl").val());
+                            $("#qruri").attr("href", uri);                        
+
+                        }
+                        else {
+                            $("#downloadPanel").hide();
+                        }
+                    }
+                });
+            });
+
+            $(".multiselect-container").append("<li><a id='close' href='javascript:void(0)' title='Click to close!' class='btn-primary closeBtn'>X</a></li>");
+            $("#close").click(function () {
+                $(".btn-group").removeClass("open");
+            });
+
         });
 
-        $(".multiselect-container").append("<li><a id='close' href='javascript:void(0)' title='Click to close!' class='btn-primary closeBtn'>X</a></li>");
-        $("#close").click(function () {
-            $(".btn-group").removeClass("open");
-        });
+        function copyData() {
+            var copyTextarea = document.querySelector('#downloadUrl');
+            copyTextarea.select();
+            document.execCommand("copy");
+            //document.execCommand("copy");
+        }
 
-    });
+        function DisableSubmit(id) {
+            $(id).attr("disabled", "disabled");
+        }
 
-    function copyData() {
-        var copyTextarea = document.querySelector('#downloadUrl');
-        copyTextarea.select();
+        function EnableSubmit(id) {
+            $(id).removeAttr("disabled");
+        }
 
+        function ShowToastMessage(msg) {
+            $('.toastMsg').text(msg).fadeIn(400).delay(5000).fadeOut(400);
+        }
 
-        document.execCommand("copy");
-        //document.execCommand("copy");
-    }
-
-    function DisableSubmit(id) {
-        $(id).attr("disabled", "disabled");
-    }
-
-    function EnableSubmit(id) {
-        $(id).removeAttr("disabled");
-    }
-
-    function ShowToastMessage(msg) {
-        $('.toastMsg').text(msg).fadeIn(400).delay(5000).fadeOut(400);
-    }
-
-    function ClearData() {
-        $(".form-control").each(function () {
-            $(this).val("");
-        });
-    }
+        function ClearData() {
+            $(".form-control").each(function () {
+                $(this).val("");
+            });
+        }
 
 
 </script>
+
+<div class="container">
+   
+    Need some text about what this page is doing
+    @using (Html.BeginForm("EventFilter", "Event", FormMethod.Post, new { id = "EventFilter", @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        <h4>Filter events to download :</h4>
+        <hr />
+        @Html.ValidationSummary()
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="form-group required">
+                    <label class="col-md-3 control-label" multiple="multiple">Group</label>
+                    <div id="dvGroupTitle" class="col-md-4">
+                        @Html.DropDownList("EventGroupTitle", ViewData["groupList"] as List<SelectListItem>, new { @Id = "EventGroupTitle", @class = "form-control", multiple = "multiple", @onchange = "check(this,'#hfEventGroupTitle')", })
+                        <input type="hidden" id="hfEventGroupTitle" name="hfEventGroupTitle" />
+                    </div>
+                </div>
+                <div class="form-group required">
+                    <label class="col-md-3 control-label" multiple="multiple">Group Name</label>
+                    <div class="col-md-4">
+                        @Html.DropDownList("EventGroupName", ViewData["groupNameList"] as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @onchange = "check(this,'#hfEventGroupName')" })
+                        <input type="hidden" id="hfEventGroupName" name="hfEventGroupName" />
+                    </div>
+                </div>
+
+                <div class="form-group required">
+                    <label class="col-md-3 control-label">Event type</label>
+                    <div class="col-md-4">
+                        @Html.DropDownList("EventTypeOne", ViewData["typeList"] as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @onchange = "check(this,'#hfEventTypeOne')" })
+                        <input type="hidden" id="hfEventTypeOne" name="hfEventTypeOne" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">Start Date</label>
+                    <div class="col-md-4">
+                        <input name="StartDate" id="StartDate" type="text" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-3 control-label">End Date</label>
+                    <div class="col-md-4">
+                        <input name="EndDate" id="EndDate" type="text" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-3 col-md-10">
+                        <input id="SubmitAjax" type="submit" class="btn btn-primary" value="Apply" />
+                    </div>
+                </div>
+
+            </div>
+            @*<div id="downloadPanel" style="display:none" class="jumbotron col-lg-6">
+                <h2>Please download your calendar.</h2>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <input id="downloadUrl" type="text" class="form-control" value="http://google.com" style="width:550px;" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <a class="btn btn-primary" href="javascript:copyData()">Copy</a>
+                    </div>
+                    <div class="col-md-3">
+                        <a id="linDownload" target="_blank" class="btn btn-primary" href="#">Download</a>
+                    </div>
+                    <div class="col-md-3">
+                        <a id="qruri" href="GetQRCode?text=xxx" class="btn btn-primary">QRCode</a>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    }
+
+    <!-- Modal -->
+    <div id="downloadPanel" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Your download links and QR code</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input id="downloadUrl" type="text" class="form-control" value="http://google.com" style="width:550px;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <a class="btn btn-primary" href="javascript:copyData()">Copy</a>
+                        </div>
+                        <div class="col-md-3">
+                            <a id="linDownload" target="_blank" class="btn btn-primary" href="#">Download</a>
+                        </div>
+                        <div class="col-md-3">
+                            <a id="qruri" href="GetQRCode?text=xxx" class="btn btn-primary">QRCode</a>
+                        </div>
+              
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div> @*end modal*@
+</div>
+
+   
