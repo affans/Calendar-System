@@ -26,9 +26,7 @@ namespace CalendarApp
             bundles.Add(new StyleBundle("~/Content/css").Include(
                         "~/Content/css/bootstrap.min.css", "~/Content/css/fancybox/jquery.fancybox.css", 
                         "~/Content/css/flexslider.css", "~/Content/css/style.css", "~/Content/skins/default.css"));
-
-               
-
+            
            //bundles.Add(new StyleBundle("~/Content/css").Include(
            //           "~/Content/bootstrap.css",
            //           "~/Content/site.css"));
