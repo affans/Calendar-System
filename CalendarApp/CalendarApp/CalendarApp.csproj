@@ -418,10 +418,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="css\" />
+    <Folder Include="Content\css\" />
+    <Folder Include="Content\js\" />
+    <Folder Include="Content\skins\" />
     <Folder Include="fonts\customicon\" />
-    <Folder Include="js\" />
-    <Folder Include="skins\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

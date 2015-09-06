@@ -12,14 +12,16 @@
 
 
     <!-- css -->
-    <link href="~/Content/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/css/fancybox/jquery.fancybox.css" rel="stylesheet">
+    @*<link href="~/Content/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/css/fancybox/jquery.fancybox.css" rel="stylesheet">*@
     @*<link href="~/css/jcarousel.css" rel="stylesheet" />*@
-    <link href="~/Content/css/flexslider.css" rel="stylesheet" />
-    <link href="~/Content/css/style.css" rel="stylesheet" />
-    
-    <!-- Theme skin -->
-    <link href="~/Content/skins/default.css" rel="stylesheet" />
+   
+     @*<link href="~/Content/css/flexslider.css" rel="stylesheet" />
+    <link href="~/Content/css/style.css" rel="stylesheet" />*@
+    @Styles.Render("~/Content/css")
+
+    < !-- Theme skin -->
+    @*<link href="~/Content/skins/default.css" rel="stylesheet" />*@
 
 
     @Scripts.Render("~/bundles/modernizr")

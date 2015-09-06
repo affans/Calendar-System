@@ -24,7 +24,8 @@ namespace CalendarApp
                       "~/Scripts/respond.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                        "~/css/bootstrap.css", "~/css/fancybox/jquery.fancybox.css", "~/css/jcarousel.css", "~/css/flexslider.css", "~/css/style.css"));
+                        "~/Content/css/bootstrap.min.css", "~/Content/css/fancybox/jquery.fancybox.css", 
+                        "~/Content/css/flexslider.css", "~/Content/css/style.css", "~/Content/skins/default.css"));
 
                
 
